@@ -29,103 +29,46 @@ namespace pds {
     public:
         using value_type = T;
 
-        /**
-         * Constructor with nothing.
-         */
-        explicit _list() {
-            resizeTo(1);
-        }
+        _list() = default;
+        _list(std::initializer_list<T> arguments) { extend(arguments); }
 
-        /**
-         * Constructor with multiple parameters
-         *
-         * @tparam Types  For variadic arguments
-         * @param args  Initializer
-         */
-        explicit _list(std::initializer_list<T> arguments) {
-            resizeTo(arguments.size());
-            extend(arguments);
-        }
+        // Indexing operatrions
+        const T& operator[](size_t index) const { return impl[index]; }
+        T& operator[](size_t index) { return impl[index]; }
 
-        /**
-         * Get value by index
-         * @param index
-         * @return
-         */
-        const T& operator[](size_t index) const {
-            if(index >= size()) throw std::runtime_error("list index out of range");
-            return buffer[index];
-        }
-
-        /**
-         * Append object to end
-         * @param item  Item to put on
-         */
-        void append(const T& item) {
-            checkCapacity(cursor + 1);
-            buffer[cursor] = item;
-            cursor++;
-        }
+        // Append
+        void append(const T& item) { impl.push_back(item); }
+        void push_back(const T& item) { impl.push_back(item); }
 
         /** Extend object by some items */
-        void extend(std::initializer_list<T> arguments) {
-            checkCapacity(cursor + arguments.size());
-            for(const auto& x: arguments) append(x);
+        template <typename Container>
+        void extend(Container arguments) {
+            impl.insert(impl.end(), arguments.begin(), arguments.end());
         }
 
         /** Get container size */
         size_t size() const {
-            return cursor;
+            return impl.size();
         }
 
         /** Equality check */
         bool operator==(const _list<T>& other) {
-            if(size() != other.size()) return false;
-            return std::equal(buffer, buffer + capacity, other.buffer);
+            return other.impl == impl;
+        }
+
+        void reserve(size_t newSize) {
+            impl.reserve(newSize);
         }
 
     public:
         // For C++-style range-based for support
-        T* begin() { return buffer; }
-        T* end() { return buffer + cursor; }
-        const T* begin() const { return buffer; }
-        const T* end() const { return buffer + cursor; }
+        typename std::vector<T>::iterator begin() { return impl.begin(); }
+        typename std::vector<T>::iterator end() { return impl.end(); }
+        typename std::vector<T>::const_iterator begin() const { return impl.begin(); }
+        typename std::vector<T>::const_iterator end() const { return impl.end(); }
 
     private:
-        /**
-         * Resize capacity to
-         * @param newCapacity
-         */
-        void resizeTo(size_t newCapacity) {
-            if(newCapacity < capacity) {
-                throw std::runtime_error("Bad things always happen");
-            }
-
-            auto newBuffer = new T[newCapacity];
-            std::copy(buffer, buffer + capacity, newBuffer);
-            capacity = newCapacity;
-            delete[] buffer;
-            buffer = newBuffer;
-        }
-
-        /**
-         * Automatically resize if needed
-         * @param requiredSize Resize!
-         */
-        void checkCapacity(size_t requiredSize) {
-            if(capacity < requiredSize) {
-                size_t newCapacity = capacity;
-                while(newCapacity < requiredSize) {
-                    newCapacity *= 2;
-                }
-                resizeTo(newCapacity);
-            }
-        }
-
-    private:
-        size_t cursor = 0;
-        size_t capacity = 0;
-        T* buffer = nullptr;
+        std::vector<T> impl;
     };
 
     /** List constructor from iterable */

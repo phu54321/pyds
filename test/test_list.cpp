@@ -57,11 +57,6 @@ TEST_CASE("Can add items to zero-length list") {
     REQUIRE(x[9999] == 9999);
 }
 
-TEST_CASE("List should throw IndexError when out of range") {
-    auto x = pds::list<int>();
-    REQUIRE_THROWS_AS(x[0], std::runtime_error);
-}
-
 
 
 // Code below is taken from original python unit test for lists.
