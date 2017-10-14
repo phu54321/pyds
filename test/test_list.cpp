@@ -40,3 +40,8 @@ TEST_CASE("List items can be get with indexing") {
     REQUIRE(x[2] == 3);
 }
 
+TEST_CASE("Zero-sized list should be supported") {
+    auto x = pds::list();
+    REQUIRE(pds::len(x) == 0);
+}
+
