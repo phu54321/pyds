@@ -31,7 +31,9 @@ namespace pds {
          * @param args  Initializer
          */
         template <class... Types> explicit list(Types... args) {
-            buffer = new int[sizeof...(args)];
+            constexpr auto initCapacity =
+                    (sizeof...(args) == 0) ? 1 : sizeof...(args);
+            resizeTo(initCapacity);
             extend({args...});
         }
 
@@ -49,6 +51,7 @@ namespace pds {
          * @param item  Item to put on
          */
         void append(int item) {
+            checkCapacity(cursor + 1);
             buffer[cursor] = item;
             cursor++;
         }
@@ -58,6 +61,7 @@ namespace pds {
          * @param arguments
          */
         void extend(std::initializer_list<int> arguments) {
+            checkCapacity(cursor + arguments.size());
             for(const auto& x: arguments) append(x);
         }
 
@@ -70,8 +74,42 @@ namespace pds {
         }
 
     private:
+        /**
+         * Resize capacity to
+         * @param newCapacity
+         */
+        void resizeTo(size_t newCapacity) {
+            if(newCapacity < capacity) {
+                throw std::runtime_error("Bad things always happen");
+            }
+
+            auto newBuffer = new int[newCapacity];
+            memset(newBuffer, 0, sizeof(int) * newCapacity);
+            memcpy(newBuffer, buffer, sizeof(int) * capacity);
+
+            capacity = newCapacity;
+            delete[] buffer;
+            buffer = newBuffer;
+        }
+
+        /**
+         * Automatically resize if needed
+         * @param requiredSize Resize!
+         */
+        void checkCapacity(size_t requiredSize) {
+            if(capacity < requiredSize) {
+                size_t newCapacity = capacity;
+                while(newCapacity < requiredSize) {
+                    newCapacity *= 2;
+                }
+                resizeTo(newCapacity);
+            }
+        }
+
+    private:
         size_t cursor = 0;
-        int* buffer;
+        size_t capacity = 0;
+        int* buffer = nullptr;
     };
 
     /**

@@ -45,3 +45,13 @@ TEST_CASE("Zero-sized list should be supported") {
     REQUIRE(pds::len(x) == 0);
 }
 
+TEST_CASE("Can add items to zero-length list") {
+    auto x = pds::list();
+    for(int i = 0 ; i < 10000 ; i++) {
+        x.append(i);
+    }
+    REQUIRE(pds::len(x) == 10000);
+    REQUIRE(x[0] == 0);
+    REQUIRE(x[1234] == 1234);
+    REQUIRE(x[9999] == 9999);
+}
