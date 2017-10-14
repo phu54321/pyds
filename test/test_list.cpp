@@ -28,3 +28,15 @@ TEST_CASE("List can be initialized with arbitrary number of integers") {
     REQUIRE(pds::len(x) == 1);
     REQUIRE(pds::len(y) == 2);
 }
+
+TEST_CASE("List items can be get with indexing") {
+    auto y = pds::list(1);
+    REQUIRE(y[0] == 1);
+
+    auto x = pds::list(1, 2, 3);
+    REQUIRE(pds::len(x) == 3);
+    REQUIRE(x[0] == 1);
+    REQUIRE(x[1] == 2);
+    REQUIRE(x[2] == 3);
+}
+

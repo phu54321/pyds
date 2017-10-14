@@ -24,23 +24,62 @@
 namespace pds {
     class list {
     public:
-        template <class... Types> list(Types... args) {
-            add(args...);
+        /**
+         * Constructor with multiple parameters
+         *
+         * @tparam Types  For variadic arguments
+         * @param args  Initializer
+         */
+        template <class... Types> explicit list(Types... args) {
+            buffer = new int[sizeof...(args)];
+            extend({args...});
         }
-        ~list() = default;
 
-        int size = 0;
+        /**
+         * Get value by index
+         * @param index
+         * @return
+         */
+        int operator[](size_t index) const {
+            return buffer[index];
+        }
+
+        /**
+         * Append object to end
+         * @param item  Item to put on
+         */
+        void append(int item) {
+            buffer[cursor] = item;
+            cursor++;
+        }
+
+        /**
+         * Extend object by some arguments
+         * @param arguments
+         */
+        void extend(std::initializer_list<int> arguments) {
+            for(const auto& x: arguments) append(x);
+        }
+
+        /**
+         * Get component size
+         * @return
+         */
+        size_t size() const {
+            return cursor;
+        }
+
     private:
-        void add(int x) {
-            size++;
-        }
-        template <class... Types> void add(int x, Types... args) {
-            size++;
-            add(args...);
-        }
+        size_t cursor = 0;
+        int* buffer;
     };
 
+    /**
+     * General length getter
+     * @param l
+     * @return
+     */
     static size_t len(const list& l) {
-        return l.size;
+        return l.size();
     }
 }
