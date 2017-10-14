@@ -23,21 +23,28 @@
 
 #include "exceptions.hpp"
 #include <cstring>
+#include <algorithm>
 
 namespace pds {
-    class list {
+    template <typename T>
+    class _list {
     public:
+        /**
+         * Constructor with nothing.
+         */
+        explicit _list() {
+            resizeTo(1);
+        }
+
         /**
          * Constructor with multiple parameters
          *
          * @tparam Types  For variadic arguments
          * @param args  Initializer
          */
-        template <class... Types> explicit list(Types... args) {
-            constexpr auto initCapacity =
-                    (sizeof...(args) == 0) ? 1 : sizeof...(args);
-            resizeTo(initCapacity);
-            extend({args...});
+        explicit _list(std::initializer_list<T> arguments) {
+            resizeTo(arguments.size());
+            extend(arguments);
         }
 
         /**
@@ -45,7 +52,7 @@ namespace pds {
          * @param index
          * @return
          */
-        int operator[](size_t index) const {
+        const T& operator[](size_t index) const {
             if(index >= size()) throw IndexError("list index out of range");
             return buffer[index];
         }
@@ -54,7 +61,7 @@ namespace pds {
          * Append object to end
          * @param item  Item to put on
          */
-        void append(int item) {
+        void append(const T& item) {
             checkCapacity(cursor + 1);
             buffer[cursor] = item;
             cursor++;
@@ -64,7 +71,7 @@ namespace pds {
          * Extend object by some arguments
          * @param arguments
          */
-        void extend(std::initializer_list<int> arguments) {
+        void extend(std::initializer_list<T> arguments) {
             checkCapacity(cursor + arguments.size());
             for(const auto& x: arguments) append(x);
         }
@@ -87,10 +94,8 @@ namespace pds {
                 throw std::runtime_error("Bad things always happen");
             }
 
-            auto newBuffer = new int[newCapacity];
-            memset(newBuffer, 0, sizeof(int) * newCapacity);
-            memcpy(newBuffer, buffer, sizeof(int) * capacity);
-
+            auto newBuffer = new T[newCapacity];
+            std::copy(buffer, buffer + capacity, newBuffer);
             capacity = newCapacity;
             delete[] buffer;
             buffer = newBuffer;
@@ -113,15 +118,33 @@ namespace pds {
     private:
         size_t cursor = 0;
         size_t capacity = 0;
-        int* buffer = nullptr;
+        T* buffer = nullptr;
     };
+
+    /**
+     * General constructor for list
+     *
+     * Note) C++ doesn't support template type deduction for class,
+     *       so we need an helper function.
+     */
+    template <typename T, typename... Args>
+    static _list<T> list(const T& arg, Args... args) {
+        return _list<T>({arg, args...});
+    }
+
+    template <typename T>
+    static _list<T> list() {
+        return _list<T>();
+    }
+
 
     /**
      * General length getter
      * @param l
      * @return
      */
-    static size_t len(const list& l) {
+    template <typename Container>
+    static size_t len(const Container& l) {
         return l.size();
     }
 }

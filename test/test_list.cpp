@@ -41,12 +41,12 @@ TEST_CASE("List items can be get with indexing") {
 }
 
 TEST_CASE("Zero-sized list should be supported") {
-    auto x = pds::list();
+    auto x = pds::list<int>();
     REQUIRE(pds::len(x) == 0);
 }
 
 TEST_CASE("Can add items to zero-length list") {
-    auto x = pds::list();
+    auto x = pds::list<int>();
     for(int i = 0 ; i < 10000 ; i++) {
         x.append(i);
     }
@@ -57,6 +57,6 @@ TEST_CASE("Can add items to zero-length list") {
 }
 
 TEST_CASE("List should throw IndexError when out of range") {
-    auto x = pds::list();
+    auto x = pds::list<int>();
     REQUIRE_THROWS_AS(x[0], pds::IndexError);
 }
