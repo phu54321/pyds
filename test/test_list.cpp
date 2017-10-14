@@ -90,8 +90,9 @@ TEST_CASE("Basic list properties", "[python-unittest]") {
         REQUIRE(empty1 == empty3);
     }
 
-    /*
-    self.assertEqual(list((0, 1, 2, 3)), [0, 1, 2, 3])
-    self.assertEqual(list('spam'), ['s', 'p', 'a', 'm'])
-     */
+    SECTION("Initialization from string") {
+        auto l1 = pds::list("spam");
+        auto l2 = pds::list({'s', 'p', 'a', 'm'});
+        REQUIRE(l1 == l2);
+    }
 }
