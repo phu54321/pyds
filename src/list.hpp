@@ -19,5 +19,16 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#define CATCH_CONFIG_MAIN
-#include "catch.hpp"
+#pragma once
+
+namespace pds {
+    class list {
+    public:
+        list(int a) {}
+        ~list() {}
+    };
+
+    static size_t len(const list& l) {
+        return 1;
+    }
+}

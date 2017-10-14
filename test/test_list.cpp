@@ -19,5 +19,10 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#define CATCH_CONFIG_MAIN
 #include "catch.hpp"
+#include "../src/list.hpp"
+
+TEST_CASE("List can be initialized") {
+    auto x = pds::list(1);
+    REQUIRE(pds::len(x) == 1);
+}
