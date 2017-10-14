@@ -58,5 +58,5 @@ TEST_CASE("Can add items to zero-length list") {
 
 TEST_CASE("List should throw IndexError when out of range") {
     auto x = pds::list<int>();
-    REQUIRE_THROWS_AS(x[0], pds::IndexError);
+    REQUIRE_THROWS_AS(x[0], std::runtime_error);
 }

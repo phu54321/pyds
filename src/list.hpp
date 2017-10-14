@@ -21,8 +21,6 @@
 
 #pragma once
 
-#include "exceptions.hpp"
-#include <cstring>
 #include <algorithm>
 
 namespace pds {
@@ -53,7 +51,7 @@ namespace pds {
          * @return
          */
         const T& operator[](size_t index) const {
-            if(index >= size()) throw IndexError("list index out of range");
+            if(index >= size()) throw std::runtime_error("list index out of range");
             return buffer[index];
         }
 
