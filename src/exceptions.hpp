@@ -19,44 +19,21 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include "catch.hpp"
-#include "../src/list.hpp"
+#pragma once
 
-TEST_CASE("List can be initialized with arbitrary number of integers") {
-    auto x = pds::list(1);
-    auto y = pds::list(1, 2);
-    REQUIRE(pds::len(x) == 1);
-    REQUIRE(pds::len(y) == 2);
-}
+#include <stdexcept>
 
-TEST_CASE("List items can be get with indexing") {
-    auto y = pds::list(1);
-    REQUIRE(y[0] == 1);
+namespace pds {
+    class IndexError : public std::exception {
+    public:
+        explicit IndexError(const char *exceptMessage)
+                : msg(exceptMessage) {}
 
-    auto x = pds::list(1, 2, 3);
-    REQUIRE(pds::len(x) == 3);
-    REQUIRE(x[0] == 1);
-    REQUIRE(x[1] == 2);
-    REQUIRE(x[2] == 3);
-}
+        const char *what() const noexcept {
+            return msg;
+        }
 
-TEST_CASE("Zero-sized list should be supported") {
-    auto x = pds::list();
-    REQUIRE(pds::len(x) == 0);
-}
-
-TEST_CASE("Can add items to zero-length list") {
-    auto x = pds::list();
-    for(int i = 0 ; i < 10000 ; i++) {
-        x.append(i);
-    }
-    REQUIRE(pds::len(x) == 10000);
-    REQUIRE(x[0] == 0);
-    REQUIRE(x[1234] == 1234);
-    REQUIRE(x[9999] == 9999);
-}
-
-TEST_CASE("List should throw IndexError when out of range") {
-    auto x = pds::list();
-    REQUIRE_THROWS_AS(x[0], pds::IndexError);
+    private:
+        const char *msg;
+    };
 }

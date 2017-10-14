@@ -21,6 +21,9 @@
 
 #pragma once
 
+#include "exceptions.hpp"
+#include <cstring>
+
 namespace pds {
     class list {
     public:
@@ -43,6 +46,7 @@ namespace pds {
          * @return
          */
         int operator[](size_t index) const {
+            if(index >= size()) throw IndexError("list index out of range");
             return buffer[index];
         }
 
