@@ -24,11 +24,23 @@
 namespace pds {
     class list {
     public:
-        list(int a) {}
-        ~list() {}
+        template <class... Types> list(Types... args) {
+            add(args...);
+        }
+        ~list() = default;
+
+        int size = 0;
+    private:
+        void add(int x) {
+            size++;
+        }
+        template <class... Types> void add(int x, Types... args) {
+            size++;
+            add(args...);
+        }
     };
 
     static size_t len(const list& l) {
-        return 1;
+        return l.size;
     }
 }

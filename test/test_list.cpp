@@ -22,7 +22,9 @@
 #include "catch.hpp"
 #include "../src/list.hpp"
 
-TEST_CASE("List can be initialized") {
+TEST_CASE("List can be initialized with arbitrary number of integers") {
     auto x = pds::list(1);
+    auto y = pds::list(1, 2);
     REQUIRE(pds::len(x) == 1);
+    REQUIRE(pds::len(y) == 2);
 }
