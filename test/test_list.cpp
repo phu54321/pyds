@@ -19,6 +19,7 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+#include <list>
 #include "catch.hpp"
 #include "../src/list.hpp"
 
@@ -73,12 +74,24 @@ TEST_CASE("Basic list properties", "[python-unittest]") {
         REQUIRE(l0_3 == l0_3_bis);
     }
 
+    SECTION("Copy construct from other lists") {
+        auto empty = pds::list<int>();
+        auto a1 = pds::list(std::vector<int>{});
+        auto a2 = pds::list(std::list<int>{});
+        REQUIRE(empty == a1);
+        REQUIRE(empty == a2);
+    }
+
+    SECTION("Comparing empty char list") {
+        auto empty1 = pds::list<char>();
+        auto empty2 = pds::list(std::string(""));
+        auto empty3 = pds::list("");
+        REQUIRE(empty1 == empty2);
+        REQUIRE(empty1 == empty3);
+    }
+
     /*
-    self.assertEqual(l0_3, l0_3_bis)
-    self.assertTrue(l0_3 is not l0_3_bis)
-    self.assertEqual(list(()), [])
     self.assertEqual(list((0, 1, 2, 3)), [0, 1, 2, 3])
-    self.assertEqual(list(''), [])
     self.assertEqual(list('spam'), ['s', 'p', 'a', 'm'])
      */
 }

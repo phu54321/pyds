@@ -128,12 +128,31 @@ namespace pds {
         T* buffer = nullptr;
     };
 
-    /** List constructor from iterable **/
+    /** List constructor from iterable */
     template <typename Iterable>
     static _list<typename Iterable::value_type> list(const Iterable& container) {
         _list<typename Iterable::value_type> list;
         for(const auto& x: container) {
             list.append(x);
+        }
+        return list;
+    }
+
+    /** List constructor for array */
+    template <typename T, size_t N>
+    static _list<T> list(const T(&array)[N]) {
+        _list<T> list;
+        for(const auto& x: array) {
+            list.append(x);
+        }
+        return list;
+    }
+
+    /** List constructor for c string */
+    static _list<char> list(const char* string) {
+        _list<char> list;
+        for(const char* p = string ; *p ; p++) {
+            list.append(*p);
         }
         return list;
     }
