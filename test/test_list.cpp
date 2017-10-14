@@ -60,3 +60,25 @@ TEST_CASE("List should throw IndexError when out of range") {
     auto x = pds::list<int>();
     REQUIRE_THROWS_AS(x[0], std::runtime_error);
 }
+
+
+
+// Code below is taken from original python unit test for lists.
+// https://github.com/python/cpython/blob/6f0eb93183519024cb360162bdd81b9faec97ba6/Lib/test/test_list.py
+
+TEST_CASE("Basic list properties", "[python-unittest]") {
+    SECTION("List can be copied from other iterable") {
+        auto l0_3 = pds::list(0, 1, 2, 3);
+        auto l0_3_bis = pds::list(l0_3);
+        REQUIRE(l0_3 == l0_3_bis);
+    }
+
+    /*
+    self.assertEqual(l0_3, l0_3_bis)
+    self.assertTrue(l0_3 is not l0_3_bis)
+    self.assertEqual(list(()), [])
+    self.assertEqual(list((0, 1, 2, 3)), [0, 1, 2, 3])
+    self.assertEqual(list(''), [])
+    self.assertEqual(list('spam'), ['s', 'p', 'a', 'm'])
+     */
+}

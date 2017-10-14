@@ -27,6 +27,8 @@ namespace pds {
     template <typename T>
     class _list {
     public:
+        using value_type = T;
+
         /**
          * Constructor with nothing.
          */
@@ -65,22 +67,29 @@ namespace pds {
             cursor++;
         }
 
-        /**
-         * Extend object by some arguments
-         * @param arguments
-         */
+        /** Extend object by some items */
         void extend(std::initializer_list<T> arguments) {
             checkCapacity(cursor + arguments.size());
             for(const auto& x: arguments) append(x);
         }
 
-        /**
-         * Get component size
-         * @return
-         */
+        /** Get container size */
         size_t size() const {
             return cursor;
         }
+
+        /** Equality check */
+        bool operator==(const _list<T>& other) {
+            if(size() != other.size()) return false;
+            return std::equal(buffer, buffer + capacity, other.buffer);
+        }
+
+    public:
+        // For C++-style range-based for support
+        T* begin() { return buffer; }
+        T* end() { return buffer + cursor; }
+        const T* begin() const { return buffer; }
+        const T* end() const { return buffer + cursor; }
 
     private:
         /**
@@ -119,6 +128,16 @@ namespace pds {
         T* buffer = nullptr;
     };
 
+    /** List constructor from iterable **/
+    template <typename Iterable>
+    static _list<typename Iterable::value_type> list(const Iterable& container) {
+        _list<typename Iterable::value_type> list;
+        for(const auto& x: container) {
+            list.append(x);
+        }
+        return list;
+    }
+
     /**
      * General constructor for list
      *
@@ -130,6 +149,7 @@ namespace pds {
         return _list<T>({arg, args...});
     }
 
+    /** Empty constructor **/
     template <typename T>
     static _list<T> list() {
         return _list<T>();
