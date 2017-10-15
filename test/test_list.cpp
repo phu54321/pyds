@@ -118,7 +118,7 @@ TEST_CASE("Testing for python methods") {
         y[0] = 4;
         REQUIRE(y == pds::list(4, 4, 3, 2, 1));
         REQUIRE(x == pds::list(5, 4, 3, 2, 1));
-        REQUIRE(!(x == y));
+        REQUIRE(x != y);
     }
 }
 

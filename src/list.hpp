@@ -55,6 +55,10 @@ namespace pds {
             return other.impl == impl;
         }
 
+        bool operator!=(const _list<T> &other) {
+            return !(*this == other);
+        }
+
         void reserve(size_t newSize) {
             impl.reserve(newSize);
         }
