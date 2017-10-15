@@ -37,11 +37,6 @@ namespace pds {
 
         _list(const _list<T> &other) : impl(other.impl) {}
 
-        // Indexing operatrions
-        const T &operator[](size_t index) const { return impl[index]; }
-
-        T &operator[](size_t index) { return impl[index]; }
-
         /** Get container size */
         int size() const {
             return static_cast<int>(impl.size());
@@ -61,8 +56,17 @@ namespace pds {
         }
 
     public:
-        // Slicing api
-        T slice(size_t index) { return impl[index]; }
+
+        // Indexing operatrions
+        const T &operator[](int index) const {
+            if (index < 0) index += impl.size();
+            return impl[index];
+        }
+
+        T &operator[](int index) {
+            if (index < 0) index += impl.size();
+            return impl[index];
+        }
 
         _list<T> slice(size_t begin, size_t end) {
             _list l;
