@@ -183,4 +183,5 @@ TEST_CASE("Basic list iterator") {
 
     // Ternary slicing
     CHECK(l(2, 5, 2) == pds::list(2, 4));
+    CHECK(l(4, 1, -2) == pds::list(4, 2));
 }

@@ -88,15 +88,27 @@ namespace pds {
             clampIndex(end);
 
             _list l;
-            int expectedSize = (end - begin) / step + 1;
-            if (expectedSize < 0) return l;
+            if (step > 0) {
+                int expectedSize = (end - begin) / step;
+                if (expectedSize < 0) return l;
 
-            l.reserve(static_cast<size_t>(expectedSize));
-            for (int i = begin; i < end; i += step) {
-                l.append(impl[i]);
-            }
-            return l;
+                l.reserve(static_cast<size_t>(expectedSize));
+                for (int i = begin; i < end; i += step) {
+                    l.append(impl[i]);
+                }
+                return l;
+            } else if (step < 0) {
+                int expectedSize = (begin - end) / (-step);
+                if (expectedSize < 0) return l;
+
+                l.reserve(static_cast<size_t>(expectedSize));
+                for (int i = begin; i > end; i += step) {
+                    l.append(impl[i]);
+                }
+                return l;
+            } else throw std::runtime_error("slice step cannot be zero");
         }
+
 
     public:
         // PYTHON API
