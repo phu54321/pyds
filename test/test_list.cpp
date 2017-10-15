@@ -94,6 +94,16 @@ TEST_CASE("Testing for python methods") {
         REQUIRE(x.count(3) == 1);
         REQUIRE(x.count(7) == 0);
     }
+
+    SECTION("Test for sort method") {
+        auto x1 = pds::list(1, 7, 3, 5, 5, 2, 9, 4);
+        x1.sort();
+        REQUIRE(x1 == pds::list(1, 2, 3, 4, 5, 5, 7, 9));
+
+        auto x2 = pds::list(1, 7, 3, 5, 5, 2, 9, 4);
+        x2.sort([](int x) { return -x; });
+        REQUIRE(x2 == pds::list(9, 7, 5, 5, 4, 3, 2, 1));
+    }
 }
 
 

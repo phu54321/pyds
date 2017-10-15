@@ -112,6 +112,17 @@ namespace pds {
             return static_cast<int>(std::count(impl.begin(), impl.end(), item));
         }
 
+        /** list.sort(key=None, reverse=False) */
+        void sort() {
+            std::sort(begin(), end());
+        }
+
+        template<typename Keyfunc>
+        void sort(Keyfunc keyf) {
+            std::sort(begin(), end(), [&keyf](const T &a1, const T &a2) {
+                return keyf(a1) < keyf(a2);
+            });
+        }
 
 
     public:
