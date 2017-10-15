@@ -107,6 +107,13 @@ namespace pds {
             return -1;
         }
 
+        /** list.count(x) */
+        int count(const T &item) {
+            return static_cast<int>(std::count(impl.begin(), impl.end(), item));
+        }
+
+
+
     public:
         // For C++-style range-based for support
         typename std::vector<T>::iterator begin() { return impl.begin(); }

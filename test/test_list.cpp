@@ -57,36 +57,44 @@ TEST_CASE("Can add items to zero-length list") {
     REQUIRE(x[9999] == 9999);
 }
 
-TEST_CASE("Test for insert, remove, pop, clear method") {
-    auto x = pds::list(1, 2, 3, 4, 5);
-    x.insert(1, 4);
-    REQUIRE(x == pds::list(1, 4, 2, 3, 4, 5));
+TEST_CASE("Testing for python methods") {
+    SECTION("Test for insert, remove, pop, clear method") {
+        auto x = pds::list(1, 2, 3, 4, 5);
+        x.insert(1, 4);
+        REQUIRE(x == pds::list(1, 4, 2, 3, 4, 5));
 
-    x.remove(2);
-    REQUIRE(x == pds::list(1, 4, 3, 4, 5));
+        x.remove(2);
+        REQUIRE(x == pds::list(1, 4, 3, 4, 5));
 
-    auto y1 = x.pop();
-    REQUIRE(y1 == 5);
-    REQUIRE(x == pds::list(1, 4, 3, 4));
+        auto y1 = x.pop();
+        REQUIRE(y1 == 5);
+        REQUIRE(x == pds::list(1, 4, 3, 4));
 
-    auto y2 = x.pop(2);
-    REQUIRE(y2 == 3);
-    REQUIRE(x == pds::list(1, 4, 4));
+        auto y2 = x.pop(2);
+        REQUIRE(y2 == 3);
+        REQUIRE(x == pds::list(1, 4, 4));
 
-    x.clear();
-    REQUIRE(pds::len(x) == 0);
+        x.clear();
+        REQUIRE(pds::len(x) == 0);
+    }
+
+    SECTION("Test for index method") {
+        auto x = pds::list(1, 2, 3, 4, 5);
+        REQUIRE(x.index(3) == 2);
+        REQUIRE(x.index(6) == -1);  // For non-existing
+
+        // For class with non-trivial equivalence
+        auto y = pds::list<std::string>("a", "b", "c", "d", "e");
+        REQUIRE(y.index("c") == 2);
+    }
+
+    SECTION("Test for count method") {
+        auto x = pds::list(1, 2, 3, 1, 2, 4, 1, 2, 5);
+        REQUIRE(x.count(1) == 3);
+        REQUIRE(x.count(3) == 1);
+        REQUIRE(x.count(7) == 0);
+    }
 }
-
-TEST_CASE("Test for index method") {
-    auto x = pds::list(1, 2, 3, 4, 5);
-    REQUIRE(x.index(3) == 2);
-    REQUIRE(x.index(6) == -1);  // For non-existing
-
-    // For class with non-trivial equivalence
-    auto y = pds::list<std::string>("a", "b", "c", "d", "e");
-    REQUIRE(y.index("c") == 2);
-}
-
 
 
 // Code below is taken from original python unit test for lists.
