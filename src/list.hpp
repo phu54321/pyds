@@ -24,26 +24,32 @@
 #include <algorithm>
 
 namespace pds {
-    template <typename T>
+    template<typename T>
     class _list {
     public:
         using value_type = T;
 
         _list() = default;
-        _list(std::initializer_list<T> arguments) { extend(arguments); }
+
+        _list(std::initializer_list<T> arguments) {
+            reserve(arguments.size());
+            extend(arguments);
+        }
 
         // Indexing operatrions
-        const T& operator[](size_t index) const { return impl[index]; }
-        T& operator[](size_t index) { return impl[index]; }
+        const T &operator[](size_t index) const { return impl[index]; }
+
+        T &operator[](size_t index) { return impl[index]; }
 
         // Append
-        void append(const T& item) { impl.push_back(item); }
-        void push_back(const T& item) { impl.push_back(item); }
+        void append(const T &item) { impl.push_back(item); }
+
+        void push_back(const T &item) { impl.push_back(item); }
 
         /** Extend object by some items */
-        template <typename Container>
-        void extend(Container arguments) {
-            impl.insert(impl.end(), arguments.begin(), arguments.end());
+        template<typename Container>
+        void extend(Container container) {
+            for (const auto &item: container) append(item);
         }
 
         /** Get container size */
@@ -52,7 +58,7 @@ namespace pds {
         }
 
         /** Equality check */
-        bool operator==(const _list<T>& other) {
+        bool operator==(const _list<T> &other) {
             return other.impl == impl;
         }
 
@@ -63,8 +69,11 @@ namespace pds {
     public:
         // For C++-style range-based for support
         typename std::vector<T>::iterator begin() { return impl.begin(); }
+
         typename std::vector<T>::iterator end() { return impl.end(); }
+
         typename std::vector<T>::const_iterator begin() const { return impl.begin(); }
+
         typename std::vector<T>::const_iterator end() const { return impl.end(); }
 
     private:
@@ -72,47 +81,44 @@ namespace pds {
     };
 
     /** List constructor from iterable */
-    template <typename Iterable>
-    static _list<typename Iterable::value_type> list(const Iterable& container) {
+    template<typename Iterable>
+    static _list<typename Iterable::value_type> list(const Iterable &container) {
         _list<typename Iterable::value_type> list;
-        for(const auto& x: container) {
+        for (const auto &x: container) {
             list.append(x);
         }
         return list;
     }
 
     /** List constructor for array */
-    template <typename T, size_t N>
+    template<typename T, size_t N>
     static _list<T> list(const T(&array)[N]) {
         _list<T> list;
-        for(const auto& x: array) {
+        list.reserve(N);
+        for (const auto &x: array) {
             list.append(x);
         }
         return list;
     }
 
     /** List constructor for c string */
-    static _list<char> list(const char* string) {
+    static _list<char> list(const char *string) {
         _list<char> list;
-        for(const char* p = string ; *p ; p++) {
+        for (const char *p = string; *p; p++) {
             list.append(*p);
         }
         return list;
     }
 
-    /**
-     * General constructor for list
-     *
-     * Note) C++ doesn't support template type deduction for class,
-     *       so we need an helper function.
-     */
-    template <typename T, typename... Args>
-    static _list<T> list(const T& arg, Args... args) {
+    /** Variadic constructor for list */
+    template<typename T, typename... Args>
+    static _list<T> list(const T &arg, Args... args) {
+        // For automatic type deduction, first argument is typed as T.
         return _list<T>({arg, args...});
     }
 
     /** Empty constructor **/
-    template <typename T>
+    template<typename T>
     static _list<T> list() {
         return _list<T>();
     }
@@ -123,8 +129,8 @@ namespace pds {
      * @param l
      * @return
      */
-    template <typename Container>
-    static size_t len(const Container& l) {
+    template<typename Container>
+    static size_t len(const Container &l) {
         return l.size();
     }
 }
