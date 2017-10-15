@@ -32,7 +32,6 @@ namespace pds {
         _list() = default;
 
         _list(std::initializer_list<T> arguments) {
-            reserve(arguments.size());
             extend(arguments);
         }
 
@@ -40,17 +39,6 @@ namespace pds {
         const T &operator[](size_t index) const { return impl[index]; }
 
         T &operator[](size_t index) { return impl[index]; }
-
-        // Append
-        void append(const T &item) { impl.push_back(item); }
-
-        void push_back(const T &item) { impl.push_back(item); }
-
-        /** Extend object by some items */
-        template<typename Container>
-        void extend(Container container) {
-            for (const auto &item: container) append(item);
-        }
 
         /** Get container size */
         size_t size() const {
@@ -60,6 +48,15 @@ namespace pds {
         /** Equality check */
         bool operator==(const _list<T> &other) {
             return other.impl == impl;
+        }
+
+    public:
+        // PYTHON API
+        void append(const T &item) { impl.push_back(item); }
+
+        template<typename Container>
+        void extend(Container container) {
+            impl.insert(impl.end(), std::begin(container), std::end(container));
         }
 
         void reserve(size_t newSize) {
@@ -84,9 +81,7 @@ namespace pds {
     template<typename Iterable>
     static _list<typename Iterable::value_type> list(const Iterable &container) {
         _list<typename Iterable::value_type> list;
-        for (const auto &x: container) {
-            list.append(x);
-        }
+        list.extend(container);
         return list;
     }
 
@@ -124,11 +119,7 @@ namespace pds {
     }
 
 
-    /**
-     * General length getter
-     * @param l
-     * @return
-     */
+    /** General length getter */
     template<typename Container>
     static size_t len(const Container &l) {
         return l.size();
