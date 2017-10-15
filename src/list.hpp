@@ -22,6 +22,7 @@
 #pragma once
 
 #include <algorithm>
+#include <limits>
 
 namespace pds {
     template<typename T>
@@ -41,8 +42,8 @@ namespace pds {
         T &operator[](size_t index) { return impl[index]; }
 
         /** Get container size */
-        size_t size() const {
-            return impl.size();
+        int size() const {
+            return static_cast<int>(impl.size());
         }
 
         /** Equality check */
@@ -58,9 +59,52 @@ namespace pds {
         // PYTHON API
         void append(const T &item) { impl.push_back(item); }
 
+        /** list.extend(iterable) */
         template<typename Container>
         void extend(Container container) {
             impl.insert(impl.end(), std::begin(container), std::end(container));
+        }
+
+        /** list.insert(i, x) */
+        void insert(int index, const T &item) {
+            impl.insert(impl.begin() + index, item);
+        }
+
+        /** list.remove(x) */
+        void remove(int index) {
+            impl.erase(impl.begin() + index);
+        }
+
+        /** list.pop([i]) */
+        T pop() {
+            return pop(size() - 1);
+        }
+
+        T pop(int index) {
+            T ret = impl[index];
+            remove(index);
+            return ret;
+        }
+
+        /** list.clear() */
+        void clear() {
+            impl.clear();
+        }
+
+        /** list.index(x[, start[, end]]) */
+        int index(const T &item) {
+            return index(item, 0, size() - 1);
+        }
+
+        int index(const T &item, int start) {
+            return index(item, start, size() - 1);
+        }
+
+        int index(const T &item, int start, int end) {
+            for (int i = start; i < end; i++) {
+                if (impl[i] == item) return i;
+            }
+            return -1;
         }
 
     public:
