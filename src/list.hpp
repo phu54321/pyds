@@ -68,9 +68,21 @@ namespace pds {
             return impl[index];
         }
 
-        _list<T> slice(size_t begin, size_t end) {
+        _list<T> operator()(int begin, int end) {
             _list l;
             l.impl.insert(l.impl.begin(), this->begin() + begin, this->begin() + end);
+            return l;
+        }
+
+        _list<T> operator()(int begin, int end, int step) {
+            _list l;
+            int expectedSize = (end - begin) / step + 1;
+            if (expectedSize < 0) return l;
+
+            l.reserve(static_cast<size_t>(expectedSize));
+            for (int i = begin; i < end; i += step) {
+                l.append(impl[i]);
+            }
             return l;
         }
 
