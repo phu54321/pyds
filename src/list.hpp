@@ -37,12 +37,12 @@ namespace pds {
 
         _list(const _list<T> &other) : impl(other.impl) {}
 
-        /** Get container size */
+        /* Get container size */
         int size() const {
             return static_cast<int>(impl.size());
         }
 
-        /** Equality check */
+        /* Equality check */
         bool operator==(const _list<T> &other) {
             return other.impl == impl;
         }
@@ -63,7 +63,7 @@ namespace pds {
 
     public:
 
-        // Indexing operatrions
+        /* Indexing operations */
         const T &operator[](int index) const {
             clampIndex(index);
             return impl[index];
@@ -87,8 +87,8 @@ namespace pds {
             clampIndex(begin);
             clampIndex(end);
 
-            _list l;
             if (step > 0) {
+                _list l;
                 int expectedSize = (end - begin) / step;
                 if (expectedSize < 0) return l;
 
@@ -98,6 +98,7 @@ namespace pds {
                 }
                 return l;
             } else if (step < 0) {
+                _list l;
                 int expectedSize = (begin - end) / (-step);
                 if (expectedSize < 0) return l;
 
@@ -114,23 +115,23 @@ namespace pds {
         // PYTHON API
         void append(const T &item) { impl.push_back(item); }
 
-        /** list.extend(iterable) */
+        /* list.extend(iterable) */
         template<typename Container>
         void extend(Container container) {
             impl.insert(impl.end(), std::begin(container), std::end(container));
         }
 
-        /** list.insert(i, x) */
+        /* list.insert(i, x) */
         void insert(int index, const T &item) {
             impl.insert(impl.begin() + index, item);
         }
 
-        /** list.remove(x) */
+        /* list.remove(x) */
         void remove(int index) {
             impl.erase(impl.begin() + index);
         }
 
-        /** list.pop([i]) */
+        /* list.pop([i]) */
         T pop() {
             return pop(size() - 1);
         }
@@ -141,20 +142,22 @@ namespace pds {
             return ret;
         }
 
-        /** list.clear() */
+        /* list.clear() */
         void clear() {
             impl.clear();
         }
 
-        /** list.index(x[, start[, end]]) */
+        /* list.index(x) */
         int index(const T &item) {
             return index(item, 0, size() - 1);
         }
 
+        /* list.index(x, start) */
         int index(const T &item, int start) {
             return index(item, start, size() - 1);
         }
 
+        /* list.index(x[, start[, end]]) */
         int index(const T &item, int start, int end) {
             clampIndex(start);
             clampIndex(end);
@@ -164,12 +167,12 @@ namespace pds {
             return -1;
         }
 
-        /** list.count(x) */
+        /* list.count(x) */
         int count(const T &item) {
             return static_cast<int>(std::count(impl.begin(), impl.end(), item));
         }
 
-        /** list.sort(key=None, reverse=False) */
+        /* list.sort(key=None, reverse=False) */
         void sort() {
             std::sort(begin(), end());
         }
@@ -181,12 +184,12 @@ namespace pds {
             });
         }
 
-        /** list.reverse() */
+        /* list.reverse() */
         void reverse() {
             std::reverse(impl.begin(), impl.end());
         }
 
-        /** list.copy() */
+        /* list.copy() */
         _list<T> copy() {
             return *this;
         }
@@ -206,7 +209,7 @@ namespace pds {
         std::vector<T> impl;
     };
 
-    /** List constructor from iterable */
+    /* List constructor from iterable */
     template<typename Iterable>
     static _list<typename Iterable::value_type> list(const Iterable &container) {
         _list<typename Iterable::value_type> list;
@@ -214,7 +217,7 @@ namespace pds {
         return list;
     }
 
-    /** List constructor for array */
+    /* List constructor for array */
     template<typename T, size_t N>
     static _list<T> list(const T(&array)[N]) {
         _list<T> list;
@@ -225,7 +228,7 @@ namespace pds {
         return list;
     }
 
-    /** List constructor for c string */
+    /* List constructor for c string */
     static _list<char> list(const char *string) {
         _list<char> list{};
         for (const char *p = string; *p; p++) {
@@ -234,14 +237,14 @@ namespace pds {
         return list;
     }
 
-    /** Variadic constructor for list */
+    /* Variadic constructor for list */
     template<typename T, typename... Args>
     static _list<T> list(const T &arg, Args... args) {
         // For automatic type deduction, first argument is typed as T.
         return _list<T>({arg, args...});
     }
 
-    /** Empty constructor **/
+    /* Empty constructor **/
     template<typename T>
     static _list<T> list() {
         return _list<T>();
