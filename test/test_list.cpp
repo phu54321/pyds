@@ -161,7 +161,13 @@ TEST_CASE("Basic list iterator") {
     auto l = pds::list(0, 1, 2, 3, 4, 5, 6);
     CHECK(l[3] == 3);  // Single item by function call
     CHECK(l[-1] == 6); // Negative indexing
+
+    // Binary slicing
     CHECK(l(2, 5) == pds::list(2, 3, 4));  // Simple slicing
+    CHECK(l(2, -2) == pds::list(2, 3, 4));  // Slicing with negative index
     CHECK(l(4, 1) == pds::list<int>());  // Slicing backward not supported
+
+    // Ternary slicing
     CHECK(l(2, 5, 2) == pds::list(2, 4));
+    CHECK(l(-1, -1, -1) == pds::list(2, 4));
 }

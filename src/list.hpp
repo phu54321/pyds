@@ -55,26 +55,38 @@ namespace pds {
             impl.reserve(newSize);
         }
 
+
+    private:
+        void clampIndex(int &index) const {
+            if (index < 0) index += impl.size();
+        }
+
     public:
 
         // Indexing operatrions
         const T &operator[](int index) const {
-            if (index < 0) index += impl.size();
+            clampIndex(index);
             return impl[index];
         }
 
         T &operator[](int index) {
-            if (index < 0) index += impl.size();
+            clampIndex(index);
             return impl[index];
         }
 
         _list<T> operator()(int begin, int end) {
+            clampIndex(begin);
+            clampIndex(end);
+
             _list l;
             l.impl.insert(l.impl.begin(), this->begin() + begin, this->begin() + end);
             return l;
         }
 
         _list<T> operator()(int begin, int end, int step) {
+            clampIndex(begin);
+            clampIndex(end);
+
             _list l;
             int expectedSize = (end - begin) / step + 1;
             if (expectedSize < 0) return l;
