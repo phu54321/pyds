@@ -83,6 +83,20 @@ TEST_CASE("Testing for python methods") {
         REQUIRE(x.index(3) == 2);
         REQUIRE(x.index(6) == -1);  // For non-existing
 
+        // index() with start
+        REQUIRE(x.index(3, 3) == -1);
+        REQUIRE(x.index(3, 2) == 2);
+
+        // Three-parameter index
+        REQUIRE(x.index(1, 1, 4) == -1);  // Value outside region
+        REQUIRE(x.index(3, 1, 4) == 2);
+        REQUIRE(x.index(3, 0, 5) == 2);
+        REQUIRE(x.index(3, 0, 1) == -1);  // Value outside region
+
+        REQUIRE(x.index(3, 0, -1) == 2);  // Negative index slicing
+        REQUIRE(x.index(3, -4, -1) == 2); // Negative index
+        REQUIRE(x.index(3, -4, -3) == -1); // Negative index
+
         // For class with non-trivial equivalence
         auto y = pds::list<std::string>("a", "b", "c", "d", "e");
         REQUIRE(y.index("c") == 2);
@@ -169,5 +183,4 @@ TEST_CASE("Basic list iterator") {
 
     // Ternary slicing
     CHECK(l(2, 5, 2) == pds::list(2, 4));
-    CHECK(l(-1, -1, -1) == pds::list(2, 4));
 }

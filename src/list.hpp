@@ -144,6 +144,8 @@ namespace pds {
         }
 
         int index(const T &item, int start, int end) {
+            clampIndex(start);
+            clampIndex(end);
             for (int i = start; i < end; i++) {
                 if (impl[i] == item) return i;
             }
