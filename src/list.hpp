@@ -50,6 +50,10 @@ namespace pds {
             return other.impl == impl;
         }
 
+        void reserve(size_t newSize) {
+            impl.reserve(newSize);
+        }
+
     public:
         // PYTHON API
         void append(const T &item) { impl.push_back(item); }
@@ -57,10 +61,6 @@ namespace pds {
         template<typename Container>
         void extend(Container container) {
             impl.insert(impl.end(), std::begin(container), std::end(container));
-        }
-
-        void reserve(size_t newSize) {
-            impl.reserve(newSize);
         }
 
     public:
@@ -98,7 +98,7 @@ namespace pds {
 
     /** List constructor for c string */
     static _list<char> list(const char *string) {
-        _list<char> list;
+        _list<char> list{};
         for (const char *p = string; *p; p++) {
             list.append(*p);
         }
