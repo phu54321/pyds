@@ -104,6 +104,22 @@ TEST_CASE("Testing for python methods") {
         x2.sort([](int x) { return -x; });
         REQUIRE(x2 == pds::list(9, 7, 5, 5, 4, 3, 2, 1));
     }
+
+    SECTION("Test for reverse and copy method") {
+        auto x = pds::list(1, 2, 3, 4, 5);
+        x.reverse();
+        REQUIRE(x == pds::list(5, 4, 3, 2, 1));
+
+        // Create a copy
+        auto y = x.copy();
+        REQUIRE(x == y);
+
+        // Assure that this is indeed a copy, not just a reference
+        y[0] = 4;
+        REQUIRE(y == pds::list(4, 4, 3, 2, 1));
+        REQUIRE(x == pds::list(5, 4, 3, 2, 1));
+        REQUIRE(!(x == y));
+    }
 }
 
 

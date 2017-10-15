@@ -36,6 +36,10 @@ namespace pds {
             extend(arguments);
         }
 
+        _list(const _list<T> &other) {
+            impl.insert(impl.end(), other.begin(), other.end());
+        }
+
         // Indexing operatrions
         const T &operator[](size_t index) const { return impl[index]; }
 
@@ -122,6 +126,16 @@ namespace pds {
             std::sort(begin(), end(), [&keyf](const T &a1, const T &a2) {
                 return keyf(a1) < keyf(a2);
             });
+        }
+
+        /** list.reverse() */
+        void reverse() {
+            std::reverse(impl.begin(), impl.end());
+        }
+
+        /** list.copy() */
+        _list<T> copy() {
+            return *this;
         }
 
 
