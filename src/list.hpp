@@ -23,6 +23,7 @@
 
 #include <algorithm>
 #include <limits>
+#include "common.hpp"
 
 namespace pds {
     template<typename T>
@@ -32,13 +33,9 @@ namespace pds {
 
         _list() = default;
 
-        _list(std::initializer_list<T> arguments) {
-            extend(arguments);
-        }
+        _list(std::initializer_list<T> arguments) : impl(arguments) {}
 
-        _list(const _list<T> &other) {
-            impl.insert(impl.end(), other.begin(), other.end());
-        }
+        _list(const _list<T> &other) : impl(other.impl) {}
 
         // Indexing operatrions
         const T &operator[](size_t index) const { return impl[index]; }
@@ -61,6 +58,16 @@ namespace pds {
 
         void reserve(size_t newSize) {
             impl.reserve(newSize);
+        }
+
+    public:
+        // Slicing api
+        T slice(size_t index) { return impl[index]; }
+
+        _list<T> slice(size_t begin, size_t end) {
+            _list l;
+            l.impl.insert(l.impl.begin(), this->begin() + begin, this->begin() + end);
+            return l;
         }
 
     public:
@@ -145,13 +152,13 @@ namespace pds {
 
     public:
         // For C++-style range-based for support
-        typename std::vector<T>::iterator begin() { return impl.begin(); }
+        auto begin() { return impl.begin(); }
 
-        typename std::vector<T>::iterator end() { return impl.end(); }
+        auto end() { return impl.end(); }
 
-        typename std::vector<T>::const_iterator begin() const { return impl.begin(); }
+        auto begin() const { return impl.begin(); }
 
-        typename std::vector<T>::const_iterator end() const { return impl.end(); }
+        auto end() const { return impl.end(); }
 
     private:
         std::vector<T> impl;
@@ -196,12 +203,5 @@ namespace pds {
     template<typename T>
     static _list<T> list() {
         return _list<T>();
-    }
-
-
-    /** General length getter */
-    template<typename Container>
-    static size_t len(const Container &l) {
-        return l.size();
     }
 }
