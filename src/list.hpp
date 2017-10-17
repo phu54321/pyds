@@ -170,15 +170,24 @@ namespace pds {
             auto end = _parse_end(_end);
             wrapAndClampIndex(begin);
             wrapAndClampIndex(end);
-            auto copyLength = len(container);
-            auto replacedLength = end - begin;
-            if (copyLength <= replacedLength) {
-                std::copy(container.begin(), container.end(), this->begin() + begin);
-                impl.erase(this->begin() + begin + copyLength, this->begin() + end);
-            } else {
-                auto it = container.begin();
-                for (int i = begin; i < end; i++) impl[i] = *(it++);
-                impl.insert(impl.begin() + end, it, container.end());
+
+            // container may not support len() operation (like in filter)
+            // We need more generic thing
+            auto inputIt = std::begin(container);
+            for (auto i = begin; i < end; i++) {
+                if (inputIt == std::end(container)) {
+                    // Less input than that is replaced
+                    impl.erase(this->begin() + i, this->begin() + end);
+                    return *this;
+                }
+
+                impl[i] = *inputIt;
+                inputIt++;
+            }
+
+            if (inputIt != std::end(container)) {
+                // More input than that is replaced.
+                impl.insert(this->begin() + end, inputIt, std::end(container));
             }
             return *this;
         }
@@ -271,7 +280,7 @@ namespace pds {
         /// Operators
 
         /* Boolean */
-        operator bool() const {
+        explicit operator bool() const {
             return size() != 0;
         }
 
