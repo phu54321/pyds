@@ -22,12 +22,18 @@
 
 #pragma once
 
-#include <cstddef>
+#include <iterator>
 
 namespace pds {
-    /** General length getter */
+    /* General length getter */
     template<typename Container>
     static size_t len(const Container &l) {
         return l.size();
     }
+
+    /* Len for list */
+    template<typename T, size_t N>
+    static size_t len(const T (&array)[N]) {
+        return N;
+    };
 }
