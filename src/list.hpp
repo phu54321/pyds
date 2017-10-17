@@ -172,7 +172,7 @@ namespace pds {
             wrapAndClampIndex(end);
 
             // container may not support len() operation (like in filter)
-            // We need more generic thing
+            // So we cannot just use std::copy naively.
             auto inputIt = std::begin(container);
             for (auto i = begin; i < end; i++) {
                 if (inputIt == std::end(container)) {
@@ -191,6 +191,48 @@ namespace pds {
             }
             return *this;
         }
+
+        template<typename Container, typename U, typename V, typename W>
+        _list<T> &set(U _begin, V _end, W _step, Container container) {
+            auto begin = _parse_begin(_begin);
+            auto end = _parse_end(_end);
+            auto step = _parse_step(_step);
+
+            wrapAndClampIndex(begin);
+            wrapAndClampIndex(end);
+
+            auto inputIt = std::begin(container);
+            auto inputEnd = std::end(container);
+
+            // If target and original data has different size, then
+            // we should be able to revert to the original state.
+            // BUT this would cost too much, so we won't do that.
+            if (step > 0) {
+                for (int i = begin; i < end; i += step) {
+                    if (inputIt == inputEnd) {
+                        throw std::runtime_error("Size mismatch");
+                    }
+                    impl[i] = *(inputIt++);
+                }
+                if (inputIt != inputEnd) {
+                    throw std::runtime_error("Size mismatch");
+                }
+            } else if (step < 0) {
+                int expectedSize = (begin - end) / (-step);
+
+                for (int i = begin; i > end; i += step) {
+                    if (inputIt == inputEnd) {
+                        throw std::runtime_error("Size mismatch");
+                    }
+                    impl[i] = *(inputIt++);
+                }
+                if (inputIt != inputEnd) {
+                    throw std::runtime_error("Size mismatch");
+                }
+            } else throw std::runtime_error("slice step cannot be zero");
+
+            return *this;
+        };
 
     public:
         // PYTHON API

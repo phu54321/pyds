@@ -166,22 +166,35 @@ TEST_CASE("Basic list slice getter") {
 }
 
 TEST_CASE("Basic list slice setter") {
-    // Binary slicing assignment
-    auto l = list(0, 1, 2, 3, 4, 5, 6);
-    l.set(1, 3, list(4));
-    REQUIRE(l == list(0, 4, 3, 4, 5, 6));
+    SECTION("Binary") {
+        // Binary slicing assignment
+        auto l = list(0, 1, 2, 3, 4, 5, 6);
+        l.set(1, 3, list(4));
+        REQUIRE(l == list(0, 4, 3, 4, 5, 6));
 
-    // Extension
-    auto l2 = list("Test.bmp");
-    // Lengthen
-    l2.set(-4, _, list(".jpeg"));
-    REQUIRE(l2 == list("Test.jpeg"));
-    // Shrink
-    l2.set(-5, _, list(".qt"));
-    REQUIRE(l2 == list("Test.qt"));
-    // Equal
-    l2.set(-3, _, list(".py"));
-    REQUIRE(l2 == list("Test.py"));
+        // Extension
+        auto l2 = list("Test.bmp");
+        // Lengthen
+        l2.set(-4, _, list(".jpeg"));
+        REQUIRE(l2 == list("Test.jpeg"));
+        // Shrink
+        l2.set(-5, _, list(".qt"));
+        REQUIRE(l2 == list("Test.qt"));
+        // Equal
+        l2.set(-3, _, list(".py"));
+        REQUIRE(l2 == list("Test.py"));
+    }
+
+    SECTION("Ternary") {
+        // Ternary operators
+        auto l1 = list(0, 1, 2, 3, 4, 5);
+        l1.set(_, _, 2, list(9, 9, 9));
+        CHECK(l1 == list(9, 1, 9, 3, 9, 5));
+
+        // Feed fewer than needed
+        auto l2 = list(0, 1, 2, 3, 4, 5);
+        CHECK_THROWS_AS(l2.set(_, _, 2, list(9, 9)), std::runtime_error);
+    }
 }
 
 TEST_CASE("Operators") {
