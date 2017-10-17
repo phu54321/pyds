@@ -160,6 +160,27 @@ namespace pds {
             } else throw std::runtime_error("slice step cannot be zero");
         }
 
+
+    public:
+
+        /* Index setter operations */
+        template<typename Container>
+        _list<T> &set(int begin, int end, Container container) {
+            wrapAndClampIndex(begin);
+            wrapAndClampIndex(end);
+            auto copyLength = len(container);
+            auto emplacedLength = end - begin;
+            if (copyLength <= emplacedLength) {
+                std::copy(container.begin(), container.end(), this->begin() + begin);
+                impl.erase(this->begin() + begin + copyLength, this->begin() + end);
+            } else {
+                auto it = container.begin();
+                for (int i = begin; i < end; i++) impl[i] = *(it++);
+                impl.insert(impl.begin() + end, it, container.end());
+            }
+            return *this;
+        }
+
     public:
         // PYTHON API
         void append(const T &item) { impl.push_back(item); }

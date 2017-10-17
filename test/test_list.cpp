@@ -197,5 +197,12 @@ TEST_CASE("Basic list slice getter") {
     CHECK(l(4, _) == list(4, 5, 6));
     CHECK(l(_, 2) == list(0, 1));
     CHECK(l(-3, _) == list(4, 5, 6));
+}
 
+TEST_CASE("Basic list slice setter") {
+    auto l = list(0, 1, 2, 3, 4, 5, 6);
+
+    // Binary slicing assignment
+    l.set(1, 3, list(4));
+    CHECK(l == list(0, 4, 3, 4, 5, 6));
 }
