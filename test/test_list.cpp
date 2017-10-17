@@ -188,6 +188,10 @@ TEST_CASE("Operators") {
     // Multiplication
     auto l = list(0) * 10;
     CHECK(l == list(0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+
+    l += list(1);
+    CHECK(l == list(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1));
+
 }
 
 // Code below is taken from original python unit test for lists.

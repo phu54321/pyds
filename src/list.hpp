@@ -266,6 +266,10 @@ namespace pds {
             return *this;
         }
 
+
+    public:
+        /// Operators
+
         /* Boolean */
         operator bool() const {
             return size() != 0;
@@ -294,6 +298,20 @@ namespace pds {
                     impl.push_back(impl[j]);
                 }
             }
+            return *this;
+        }
+
+        /* Add items */
+        template<typename U>
+        _list<T> operator+(const U &rhs) const {
+            auto temp = *this;
+            temp += rhs;
+            return temp;
+        }
+
+        template<typename U>
+        const _list<T> &operator+=(const U &rhs) {
+            impl.insert(impl.end(), rhs.begin(), rhs.end());
             return *this;
         }
 
