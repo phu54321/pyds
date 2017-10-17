@@ -26,6 +26,9 @@
 #include "common.hpp"
 
 namespace pds {
+    static const struct _slice_placeholder {
+    } _;
+
     template<typename T>
     class _list {
     public:
@@ -74,6 +77,32 @@ namespace pds {
             else if (index > impl.size()) index = static_cast<int>(impl.size());
         }
 
+    private:
+        // Helper for slicer
+        int _parse_begin(int index) {
+            return index;
+        }
+
+        int _parse_begin(const _slice_placeholder &) {
+            return 0;
+        }
+
+        int _parse_end(int index) {
+            return index;
+        }
+
+        int _parse_end(const _slice_placeholder &) {
+            return static_cast<int>(impl.size());
+        }
+
+        int _parse_step(int index) {
+            return index;
+        }
+
+        int _parse_step(const _slice_placeholder &) {
+            return 1;
+        }
+
     public:
 
         /* Indexing operations */
@@ -87,7 +116,10 @@ namespace pds {
             return impl[index];
         }
 
-        _list<T> operator()(int begin, int end) {
+        template<typename U, typename V>
+        _list<T> operator()(U _begin, V _end) {
+            auto begin = _parse_begin(_begin);
+            auto end = _parse_end(_end);
             wrapAndClampIndex(begin);
             wrapAndClampIndex(end);
 
@@ -96,7 +128,12 @@ namespace pds {
             return l;
         }
 
-        _list<T> operator()(int begin, int end, int step) {
+        template<typename U, typename V, typename W>
+        _list<T> operator()(U _begin, V _end, W _step) {
+            auto begin = _parse_begin(_begin);
+            auto end = _parse_end(_end);
+            auto step = _parse_step(_step);
+
             wrapAndClampIndex(begin);
             wrapAndClampIndex(end);
 
@@ -220,6 +257,16 @@ namespace pds {
     private:
         std::vector<T> impl;
     };
+
+    template<typename T>
+    std::ostream &operator<<(std::ostream &lhs, _list<T> data) {
+        lhs << "{";
+        for (auto &item: data) {
+            lhs << item << ", ";
+        }
+        lhs << "}";
+        return lhs;
+    }
 
     /* List constructor from iterable */
     template<typename Iterable>
