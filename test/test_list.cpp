@@ -171,7 +171,7 @@ TEST_CASE("Basic list properties", "[python-unittest]") {
 }
 
 
-TEST_CASE("Basic list iterator") {
+TEST_CASE("Basic list slice getter") {
     auto l = pds::list(0, 1, 2, 3, 4, 5, 6);
     CHECK(l[3] == 3);  // Single item by function call
     CHECK(l[-1] == 6); // Negative indexing
@@ -184,4 +184,8 @@ TEST_CASE("Basic list iterator") {
     // Ternary slicing
     CHECK(l(2, 5, 2) == pds::list(2, 4));
     CHECK(l(4, 1, -2) == pds::list(4, 2));
+
+    // Clamping
+    CHECK(l(-9, 9).size() == 7);
+    CHECK(l(-6, 2).size() == 1);
 }

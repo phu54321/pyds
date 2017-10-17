@@ -57,26 +57,39 @@ namespace pds {
 
 
     private:
-        void clampIndex(int &index) const {
+        void wrapIndex(int &index) const {
             if (index < 0) index += impl.size();
+        }
+
+        void wrapAndCheckIndex(int &index) const {
+            wrapIndex(index);
+            if (index < 0 || index >= impl.size()) {
+                throw std::runtime_error("Out of bounds");
+            }
+        }
+
+        void wrapAndClampIndex(int &index) const {
+            wrapIndex(index);
+            if (index < 0) index = 0;
+            else if (index > impl.size()) index = static_cast<int>(impl.size());
         }
 
     public:
 
         /* Indexing operations */
         const T &operator[](int index) const {
-            clampIndex(index);
+            wrapAndCheckIndex(index);
             return impl[index];
         }
 
         T &operator[](int index) {
-            clampIndex(index);
+            wrapAndCheckIndex(index);
             return impl[index];
         }
 
         _list<T> operator()(int begin, int end) {
-            clampIndex(begin);
-            clampIndex(end);
+            wrapAndClampIndex(begin);
+            wrapAndClampIndex(end);
 
             _list l;
             l.impl.insert(l.impl.begin(), this->begin() + begin, this->begin() + end);
@@ -84,8 +97,8 @@ namespace pds {
         }
 
         _list<T> operator()(int begin, int end, int step) {
-            clampIndex(begin);
-            clampIndex(end);
+            wrapAndClampIndex(begin);
+            wrapAndClampIndex(end);
 
             if (step > 0) {
                 _list l;
@@ -109,7 +122,6 @@ namespace pds {
                 return l;
             } else throw std::runtime_error("slice step cannot be zero");
         }
-
 
     public:
         // PYTHON API
@@ -159,8 +171,8 @@ namespace pds {
 
         /* list.index(x[, start[, end]]) */
         int index(const T &item, int start, int end) {
-            clampIndex(start);
-            clampIndex(end);
+            wrapAndClampIndex(start);
+            wrapAndClampIndex(end);
             for (int i = start; i < end; i++) {
                 if (impl[i] == item) return i;
             }
