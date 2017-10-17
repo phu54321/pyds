@@ -139,40 +139,6 @@ TEST_CASE("Testing for python methods") {
 }
 
 
-// Code below is taken from original python unit test for lists.
-// https://github.com/python/cpython/blob/6f0eb93183519024cb360162bdd81b9faec97ba6/Lib/test/test_list.py
-
-TEST_CASE("Basic list properties", "[python-unittest]") {
-    SECTION("List can be copied from other iterable") {
-        auto l0_3 = list(0, 1, 2, 3);
-        auto l0_3_bis = list(l0_3);
-        REQUIRE(l0_3 == l0_3_bis);
-    }
-
-    SECTION("Copy construct from other lists") {
-        auto empty = list<int>();
-        auto a1 = list(std::vector<int>{});
-        auto a2 = list(std::list<int>{});
-        REQUIRE(empty == a1);
-        REQUIRE(empty == a2);
-    }
-
-    SECTION("Comparing empty char list") {
-        auto empty1 = list<char>();
-        auto empty2 = list(std::string(""));
-        auto empty3 = list("");
-        REQUIRE(empty1 == empty2);
-        REQUIRE(empty1 == empty3);
-    }
-
-    SECTION("Initialization from string") {
-        auto l1 = list("spam");
-        auto l2 = list({'s', 'p', 'a', 'm'});
-        REQUIRE(l1 == l2);
-    }
-}
-
-
 TEST_CASE("Basic list slice getter") {
     auto l = list(0, 1, 2, 3, 4, 5, 6);
     CHECK(l[3] == 3);  // Single item by function call
@@ -216,4 +182,58 @@ TEST_CASE("Basic list slice setter") {
     // Equal
     l2.set(-3, _, list(".py"));
     REQUIRE(l2 == list("Test.py"));
+}
+
+TEST_CASE("Operators") {
+    // Multiplication
+    auto l = list(0) * 10;
+    CHECK(l == list(0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+}
+
+// Code below is taken from original python unit test for lists.
+// https://github.com/python/cpython/blob/master/Lib/test/test_list.py
+
+TEST_CASE("test_basic", "[python-unittest]") {
+    SECTION("List can be copied from other iterable") {
+        auto l0_3 = list(0, 1, 2, 3);
+        auto l0_3_bis = list(l0_3);
+        CHECK(l0_3 == l0_3_bis);
+    }
+
+    SECTION("Copy construct from other lists") {
+        auto empty = list<int>();
+        auto a1 = list(std::vector<int>{});
+        auto a2 = list(std::list<int>{});
+        CHECK(empty == a1);
+        CHECK(empty == a2);
+    }
+
+    SECTION("Comparing empty char list") {
+        auto empty1 = list<char>();
+        auto empty2 = list(std::string(""));
+        auto empty3 = list("");
+        CHECK(empty1 == empty2);
+        CHECK(empty1 == empty3);
+    }
+
+    SECTION("Initialization from string") {
+        auto l1 = list("spam");
+        auto l2 = list({'s', 'p', 'a', 'm'});
+        CHECK(l1 == l2);
+    }
+}
+
+
+TEST_CASE("test_truth", "[python-unittest]") {
+    auto l1 = list<int>();
+    CHECK(!l1);
+
+    auto l2 = list(42);
+    CHECK(l2);
+}
+
+TEST_CASE("test_len", "[python-unittest]") {
+    CHECK(len(list<int>()) == 0);
+    CHECK(len(list(0)) == 1);
+    CHECK(len(list(0, 1, 2)) == 3);
 }

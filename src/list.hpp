@@ -266,6 +266,37 @@ namespace pds {
             return *this;
         }
 
+        /* Boolean */
+        operator bool() const {
+            return size() != 0;
+        }
+
+        /* Multiply by number */
+        _list<T> operator*(int n) const {
+            auto temp = *this;
+            temp *= n;
+            return temp;
+        }
+
+        const _list<T> &operator*=(int n) {
+            if (n <= 0) {
+                clear();
+                return *this;
+            }
+
+            // This modifies itself, thus invalidating all kinds of iterators.
+            // While this push_back loop seems inefficient, It is the only safe
+            // way to get the desired effect.
+            auto size = impl.size();
+            impl.reserve(size * n);
+            for (int i = 1; i < n; i++) {
+                for (int j = 0; j < size; j++) {
+                    impl.push_back(impl[j]);
+                }
+            }
+            return *this;
+        }
+
 
     public:
         // For C++-style range-based for support
@@ -284,8 +315,9 @@ namespace pds {
     template<typename T>
     std::ostream &operator<<(std::ostream &lhs, _list<T> data) {
         lhs << "{";
-        for (auto &item: data) {
-            lhs << item << ", ";
+        for (auto i = 0; i < len(data); i++) {
+            lhs << data[i];
+            if (i != len(data) - 1) lhs << ", ";
         }
         lhs << "}";
         return lhs;
