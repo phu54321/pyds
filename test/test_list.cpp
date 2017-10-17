@@ -163,6 +163,11 @@ TEST_CASE("Basic list slice getter") {
     CHECK(l(4, _) == list(4, 5, 6));
     CHECK(l(_, 2) == list(0, 1));
     CHECK(l(-3, _) == list(4, 5, 6));
+
+    // Ternary slicing with placeholders, reverse
+    CHECK(l(_, _, -1) == list(6, 5, 4, 3, 2, 1, 0));
+    CHECK(l(_, -1, -1) == list<int>());
+    CHECK(l(_, 0, -1) == list(6, 5, 4, 3, 2, 1));
 }
 
 TEST_CASE("Basic list slice setter") {

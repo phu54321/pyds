@@ -27,7 +27,7 @@
 
 namespace pds {
     static const struct _slice_placeholder {
-    } _;
+    } _{};
 
     template<typename T>
     class _list {
@@ -71,7 +71,7 @@ namespace pds {
             }
         }
 
-        void wrapAndClampIndex(int &index) const {
+        void wrapAndClampBegin(int &index) const {
             wrapIndex(index);
             if (index < 0) index = 0;
             else if (index > impl.size()) index = static_cast<int>(impl.size());
@@ -79,28 +79,18 @@ namespace pds {
 
     private:
         // Helper for slicer
-        int _parse_begin(int index) {
-            return index;
+        int _slice_begin(int index, int step) { return index; }
+
+        int _slice_end(int index, int step) { return index; }
+
+        int _slice_begin(const _slice_placeholder &, int step) {
+            if (step > 0) return 0;
+            else return static_cast<int>(impl.size()) - 1;
         }
 
-        int _parse_begin(const _slice_placeholder &) {
-            return 0;
-        }
-
-        int _parse_end(int index) {
-            return index;
-        }
-
-        int _parse_end(const _slice_placeholder &) {
-            return static_cast<int>(impl.size());
-        }
-
-        int _parse_step(int index) {
-            return index;
-        }
-
-        int _parse_step(const _slice_placeholder &) {
-            return 1;
+        int _slice_end(const _slice_placeholder &, int step) {
+            if (step > 0) return static_cast<int>(impl.size());
+            else return -1;
         }
 
     public:
@@ -118,25 +108,36 @@ namespace pds {
 
         template<typename U, typename V>
         _list<T> operator()(U _begin, V _end) {
-            auto begin = _parse_begin(_begin);
-            auto end = _parse_end(_end);
-            wrapAndClampIndex(begin);
-            wrapAndClampIndex(end);
+            auto begin = _slice_begin(_begin, 1);
+            auto end = _slice_end(_end, 1);
+            wrapAndClampBegin(begin);
+            wrapAndClampBegin(end);
 
             _list l;
             l.impl.insert(l.impl.begin(), this->begin() + begin, this->begin() + end);
             return l;
         }
 
-        template<typename U, typename V, typename W>
-        _list<T> operator()(U _begin, V _end, W _step) {
-            auto begin = _parse_begin(_begin);
-            auto end = _parse_end(_end);
-            auto step = _parse_step(_step);
+        template<typename U, typename V>
+        _list<T> operator()(U _begin, V _end, int step) {
+            auto begin = _slice_begin(_begin, step);
+            auto end = _slice_end(_end, step);
+            wrapAndClampBegin(begin);
+            wrapAndClampBegin(end);
+            return _get(begin, end, step);
+        }
 
-            wrapAndClampIndex(begin);
-            wrapAndClampIndex(end);
+        template<typename U>
+        _list<T> operator()(U _begin, _slice_placeholder, int step) {
+            auto begin = _slice_begin(_begin, step);
+            wrapAndClampBegin(begin);
+            int end = (step > 0) ? size() : -1;
+            return _get(begin, end, step);
+        }
 
+    private:
+
+        _list<T> _get(int begin, int end, int step) {
             if (step > 0) {
                 _list l;
                 int expectedSize = (end - begin) / step;
@@ -166,10 +167,10 @@ namespace pds {
         /* Index setter operations */
         template<typename Container, typename U, typename V>
         _list<T> &set(U _begin, V _end, Container container) {
-            auto begin = _parse_begin(_begin);
-            auto end = _parse_end(_end);
-            wrapAndClampIndex(begin);
-            wrapAndClampIndex(end);
+            auto begin = _slice_begin(_begin, 1);
+            auto end = _slice_end(_end, 1);
+            wrapAndClampBegin(begin);
+            wrapAndClampBegin(end);
 
             // container may not support len() operation (like in filter)
             // So we cannot just use std::copy naively.
@@ -192,15 +193,26 @@ namespace pds {
             return *this;
         }
 
-        template<typename Container, typename U, typename V, typename W>
-        _list<T> &set(U _begin, V _end, W _step, Container container) {
-            auto begin = _parse_begin(_begin);
-            auto end = _parse_end(_end);
-            auto step = _parse_step(_step);
+        template<typename Container, typename U, typename V>
+        _list<T> set(U _begin, V _end, int step, Container container) {
+            auto begin = _slice_begin(_begin, step);
+            auto end = _slice_end(_end, step);
+            wrapAndClampBegin(begin);
+            wrapAndClampBegin(end);
+            return _set(begin, end, step, container);
+        }
 
-            wrapAndClampIndex(begin);
-            wrapAndClampIndex(end);
+        template<typename Container, typename U>
+        _list<T> set(U _begin, _slice_placeholder, int step, Container container) {
+            auto begin = _slice_begin(_begin, step);
+            wrapAndClampBegin(begin);
+            int end = (step > 0) ? size() : -1;
+            return _set(begin, end, step, container);
+        }
 
+    private:
+        template<typename Container>
+        _list<T> &_set(int begin, int end, int step, Container container) {
             auto inputIt = std::begin(container);
             auto inputEnd = std::end(container);
 
@@ -282,8 +294,8 @@ namespace pds {
 
         /* list.index(x[, start[, end]]) */
         int index(const T &item, int start, int end) {
-            wrapAndClampIndex(start);
-            wrapAndClampIndex(end);
+            wrapAndClampBegin(start);
+            wrapAndClampBegin(end);
             for (int i = start; i < end; i++) {
                 if (impl[i] == item) return i;
             }
