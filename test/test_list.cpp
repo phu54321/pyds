@@ -195,7 +195,6 @@ TEST_CASE("Operators") {
 }
 
 // Code below is taken from original python unit test for lists.
-// https://github.com/python/cpython/blob/master/Lib/test/test_list.py
 
 TEST_CASE("test_basic", "[python-unittest]") {
     SECTION("List can be copied from other iterable") {
@@ -241,3 +240,5 @@ TEST_CASE("test_len", "[python-unittest]") {
     CHECK(len(list(0)) == 1);
     CHECK(len(list(0, 1, 2)) == 3);
 }
+
+/// TODO : test_repr_large
