@@ -164,13 +164,15 @@ namespace pds {
     public:
 
         /* Index setter operations */
-        template<typename Container>
-        _list<T> &set(int begin, int end, Container container) {
+        template<typename Container, typename U, typename V>
+        _list<T> &set(U _begin, V _end, Container container) {
+            auto begin = _parse_begin(_begin);
+            auto end = _parse_end(_end);
             wrapAndClampIndex(begin);
             wrapAndClampIndex(end);
             auto copyLength = len(container);
-            auto emplacedLength = end - begin;
-            if (copyLength <= emplacedLength) {
+            auto replacedLength = end - begin;
+            if (copyLength <= replacedLength) {
                 std::copy(container.begin(), container.end(), this->begin() + begin);
                 impl.erase(this->begin() + begin + copyLength, this->begin() + end);
             } else {

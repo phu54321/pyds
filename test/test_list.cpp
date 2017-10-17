@@ -200,9 +200,20 @@ TEST_CASE("Basic list slice getter") {
 }
 
 TEST_CASE("Basic list slice setter") {
-    auto l = list(0, 1, 2, 3, 4, 5, 6);
-
     // Binary slicing assignment
+    auto l = list(0, 1, 2, 3, 4, 5, 6);
     l.set(1, 3, list(4));
-    CHECK(l == list(0, 4, 3, 4, 5, 6));
+    REQUIRE(l == list(0, 4, 3, 4, 5, 6));
+
+    // Extension
+    auto l2 = list("Test.bmp");
+    // Lengthen
+    l2.set(-4, _, list(".jpeg"));
+    REQUIRE(l2 == list("Test.jpeg"));
+    // Shrink
+    l2.set(-5, _, list(".qt"));
+    REQUIRE(l2 == list("Test.qt"));
+    // Equal
+    l2.set(-3, _, list(".py"));
+    REQUIRE(l2 == list("Test.py"));
 }
